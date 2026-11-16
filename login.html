@@ -1,373 +1,552 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>EcoCash Login – two-step</title>
-  
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: #e5e5e5;
-    }
-    .container {
-      width: 100%;
-      max-width: 400px;
-      margin: auto;
-      background: white;
-      min-height: 100vh;
-      position: relative;
-      overflow: hidden;
-    }
-    .main-content {
-      position: relative;
-      z-index: 2;
-      padding-bottom: 10px;
-    }
-    .logo {
-      text-align: center;
-      font-size: 38px;
-      font-weight: bold;
-      margin-top: 40px;
-    }
-    .logo span:first-child { color: #1c6aa6; }
-    .logo span:last-child { color: #e12b2b; }
-    .login-title {
-      text-align: center;
-      color: #666;
-      font-size: 26px;
-      margin-top: 18px;
-    }
-    .phone-box {
-      margin: 22px;
-      border: 2px solid #1c6aa6;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      padding: 10px 12px;
-      background: #f2f2f2;
-    }
-    .flag {
-      width: 26px;
-      margin-right: 8px;
-    }
-    .code {
-      color: #666;
-      margin-right: 10px;
-      font-size: 16px;
-    }
-    .phone-input {
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 17px;
-      flex: 1;
-    }
-    .pin-title {
-      text-align: center;
-      color: #666;
-      margin-top: 5px;
-    }
-    .pin-box {
-      display: flex;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 18px;
-    }
-    .pin {
-      width: 44px;
-      height: 44px;
-      border-radius: 10px;
-      border: 2px solid #1c6aa6;
-      text-align: center;
-      font-size: 20px;
-      outline: none;
-      transition: all 0.1s ease;
-    }
-    .pin:focus {
-      border-color: #e12b2b !important;
-      box-shadow: 0 0 0 2px rgba(225,43,43,0.2) !important;
-      outline: none;
-    }
-    /* OTP Screen Styles (kept for UI integrity but never used) */
-    .otp-screen {
-      display: none;
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: white;
-      z-index: 10;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .otp-screen.active {
-      display: block;
-    }
-    .otp-header {
-      text-align: center;
-      margin-top: 30px;
-    }
-    .otp-header h2 {
-      color: #1c6aa6;
-      font-size: 24px;
-      margin-bottom: 10px;
-    }
-    .otp-message {
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 30px;
-      text-align: center;
-    }
-    .otp-phone-display {
-      background: #f2f2f2;
-      padding: 15px;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 20px;
-      font-weight: bold;
-      color: #1c6aa6;
-      margin-bottom: 30px;
-      letter-spacing: 1px;
-    }
-    .otp-phone-display .country-code {
-      color: #e12b2b;
-      margin-right: 5px;
-    }
-    .otp-inputs {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      margin-bottom: 30px;
-      flex-wrap: wrap;
-    }
-    .otp-input {
-      width: 45px;
-      height: 55px;
-      border: 2px solid #1c6aa6;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 24px;
-      font-weight: bold;
-      outline: none;
-    }
-    .otp-input:focus {
-      border-color: #e12b2b;
-    }
-    .error-message {
-      color: #e12b2b;
-      text-align: center;
-      font-size: 14px;
-      margin: 10px 0;
-      min-height: 20px;
-    }
-    .success-message {
-      color: #28a745;
-      text-align: center;
-      font-size: 14px;
-      margin: 10px 0;
-      min-height: 20px;
-    }
-    .back-btn {
-      background: #6c757d;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 16px;
-      cursor: pointer;
-      width: 100%;
-      margin-top: 20px;
-    }
-    .back-btn:hover {
-      background: #5a6268;
-    }
-    .bottom {
-      position: relative;
-      margin-top: 40px;
-      left: 0;
-      right: 0;
-      background: #125c9c;
-      color: white;
-      padding-top: 110px;
-      padding-bottom: 28px;
-      text-align: center;
-    }
-    .bottom::before {
-      content: "";
-      position: absolute;
-      top: -80px;
-      left: -20%;
-      width: 140%;
-      height: 160px;
-      background: white;
-      border-bottom-left-radius: 50%;
-      border-bottom-right-radius: 50%;
-    }
-    .bottom p {
-      width: 82%;
-      margin: auto;
-      font-size: 15px;
-      line-height: 1.4;
-    }
-    .buttons {
-      display: flex;
-      justify-content: center;
-      gap: 14px;
-      margin: 20px 22px;
-    }
-    .btn {
-      background: white;
-      border-radius: 16px;
-      padding: 8px 16px;
-      flex: 1;
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      transition: all 0.1s ease;
-    }
-    .btn svg {
-      width: 22px;
-      height: 22px;
-      fill: #1c6aa6;
-    }
-    .btn span {
-      font-size: 13px;
-      color: #333;
-      font-weight: bold;
-      line-height: 1.2;
-    }
-    .version {
-      margin-top: 24px;
-      opacity: 0.85;
-      font-size: 14px;
-    }
-    .terms {
-      margin-top: 6px;
-      font-size: 14px;
-      opacity: 0.9;
-    }
-    a {
-      color: white;
-      text-decoration: underline;
-    }
-    .phone-error {
-      color: #e12b2b;
-      font-size: 13px;
-      margin: -10px 22px 10px 22px;
-      text-align: left;
-      min-height: 20px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>CABS Bank Zimbabwe - Demo Login</title>
 
-    /* Spinner Overlay – now blue to match EcoCash branding */
-    #spinnerOverlay {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(3px);
-      z-index: 9999;
-    }
-    .spinner-loader {
-      width: 48px;
-      height: 48px;
-      border: 5px solid #ffffff;
-      border-top: 5px solid #1c6aa6;  /* changed from red to EcoCash blue */
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
+<style>
+* { box-sizing: border-box; }
+
+:root {
+    --navy: #003b5c;
+    --navy-dark: #002b43;
+    --green: #76ad3b;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #e5e5e5;
+}
+
+.container {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    background: white;
+    min-height: 100vh;
+    position: relative;
+    overflow: hidden;
+}
+
+.main-content {
+    position: relative;
+    z-index: 2;
+    padding-bottom: 10px;
+}
+
+.logo {
+    text-align: center;
+    font-size: 38px;
+    font-weight: bold;
+    margin-top: 40px;
+    color: var(--navy);
+    letter-spacing: 1px;
+}
+
+.logo span { color: var(--green); }
+
+.bank-caption {
+    text-align: center;
+    color: #777;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    margin-top: 5px;
+}
+
+.demo-label {
+    text-align: center;
+    color: #806018;
+    background: #fff6df;
+    border-radius: 20px;
+    padding: 8px;
+    margin: 18px 22px;
+    font-size: 11px;
+    font-weight: bold;
+}
+
+.login-title {
+    text-align: center;
+    color: #666;
+    font-size: 26px;
+    margin-top: 18px;
+}
+
+.phone-box {
+    margin: 22px;
+    border: 2px solid var(--navy);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: #f2f2f2;
+}
+
+.flag {
+    width: 26px;
+    margin-right: 8px;
+}
+
+.code {
+    color: #666;
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.phone-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 17px;
+    flex: 1;
+    min-width: 0;
+}
+
+.phone-error {
+    color: #c0392b;
+    font-size: 13px;
+    margin: -10px 22px 10px;
+    min-height: 20px;
+}
+
+.pin-title {
+    text-align: center;
+    color: #666;
+    margin-top: 5px;
+}
+
+.pin-box {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 18px;
+}
+
+.pin {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    border: 2px solid var(--navy);
+    text-align: center;
+    font-size: 20px;
+    outline: none;
+}
+
+.pin:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 2px rgba(118,173,59,.2);
+}
+
+.demo-hint {
+    text-align: center;
+    font-size: 12px;
+    color: #777;
+    margin: 14px 22px;
+}
+
+.verify-btn {
+    display: block;
+    width: calc(100% - 44px);
+    margin: 22px;
+    padding: 15px;
+    border: none;
+    border-radius: 9px;
+    background: var(--navy);
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.verify-btn:disabled {
+    background: #9baab3;
+    cursor: not-allowed;
+}
+
+.otp-screen {
+    display: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    min-height: 100%;
+    background: white;
+    z-index: 10;
+    padding: 20px;
+}
+
+.otp-screen.active { display: block; }
+
+.otp-header {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.otp-header h2 {
+    color: var(--navy);
+    font-size: 24px;
+}
+
+.otp-message {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 30px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.otp-phone-display {
+    background: #f2f2f2;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    color: var(--navy);
+    margin-bottom: 30px;
+}
+
+.otp-inputs {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.otp-input {
+    width: 42px;
+    height: 50px;
+    border: 2px solid var(--navy);
+    border-radius: 9px;
+    text-align: center;
+    font-size: 22px;
+    outline: none;
+}
+
+.otp-input:focus { border-color: var(--green); }
+
+.error-message {
+    color: #c0392b;
+    text-align: center;
+    font-size: 14px;
+    margin: 10px 0;
+    min-height: 20px;
+}
+
+.success-message {
+    color: #27813a;
+    text-align: center;
+    font-size: 14px;
+    margin: 10px 0;
+    min-height: 20px;
+}
+
+.back-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px;
+    font-size: 16px;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.bottom {
+    position: relative;
+    margin-top: 40px;
+    background: var(--navy);
+    color: white;
+    padding-top: 110px;
+    padding-bottom: 28px;
+    text-align: center;
+}
+
+.bottom::before {
+    content: "";
+    position: absolute;
+    top: -80px;
+    left: -20%;
+    width: 140%;
+    height: 160px;
+    background: white;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+}
+
+.bottom p {
+    position: relative;
+    width: 82%;
+    margin: auto;
+    font-size: 15px;
+    line-height: 1.4;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 14px;
+    margin: 20px 22px;
+    position: relative;
+}
+
+.btn {
+    background: white;
+    border-radius: 16px;
+    padding: 12px 10px;
+    flex: 1;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    color: #333;
+}
+
+.btn svg {
+    width: 22px;
+    height: 22px;
+    fill: var(--navy);
+}
+
+.btn span {
+    font-size: 13px;
+    font-weight: bold;
+}
+
+.version {
+    position: relative;
+    margin-top: 24px;
+    opacity: .85;
+    font-size: 14px;
+}
+
+.terms {
+    position: relative;
+    margin-top: 6px;
+    font-size: 13px;
+    opacity: .9;
+}
+
+.terms a {
+    color: white;
+    text-decoration: underline;
+}
+
+.notice {
+    font-size: 11px;
+    line-height: 1.5;
+    color: #777;
+    text-align: center;
+    margin: 15px 22px;
+}
+
+#spinnerOverlay {
+    position: fixed;
+    inset: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 18px;
+    background: rgba(0,0,0,.6);
+    backdrop-filter: blur(3px);
+    z-index: 9999;
+    color: white;
+}
+
+.spinner-loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid white;
+    border-top: 5px solid var(--green);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+#resultMessage {
+    text-align: center;
+    padding: 25px 20px;
+    line-height: 1.6;
+    color: #28783b;
+    display: none;
+}
+
+@media(max-width:360px) {
+    .pin-box { gap: 8px; }
+    .pin { width: 40px; }
+    .otp-inputs { gap: 5px; }
+    .otp-input { width: 39px; }
+}
+</style>
 </head>
+
 <body>
 
 <div class="container">
-  <!-- Main Login Screen -->
-  <div class="main-content" id="loginScreen">
-    <div class="logo">
-      <span>Eco</span><span>Cash</span>
-    </div>
-    <div class="login-title">Login</div>
 
-    <div class="phone-box">
-      <img class="flag" src="https://flagcdn.com/w40/zw.png" alt="Zimbabwe flag">
-      <div class="code">+263</div>
-      <input class="phone-input" id="phoneInput" placeholder="Phone Number" type="tel" inputmode="numeric">
-    </div>
-    <div class="phone-error" id="phoneError"></div>
+    <!-- DEMO LOGIN SCREEN -->
+    <div class="main-content" id="loginScreen">
 
-    <div class="pin-title">Enter your PIN</div>
+        <div class="logo">CABS<span>.</span></div>
 
-    <div class="pin-box" id="pinBox">
-      <input class="pin" type="password" maxlength="1" inputmode="numeric" id="pin1">
-      <input class="pin" type="password" maxlength="1" inputmode="numeric" id="pin2">
-      <input class="pin" type="password" maxlength="1" inputmode="numeric" id="pin3">
-      <input class="pin" type="password" maxlength="1" inputmode="numeric" id="pin4">
-    </div>
-  </div>
+        <div class="bank-caption">
+            CENTRAL AFRICAN BUILDING SOCIETY
+        </div>
 
-  <!-- OTP Screen (kept for UI consistency but no longer functional) -->
-  <div class="otp-screen" id="otpScreen">
-    <div class="otp-header">
-      <h2>Verify OTP</h2>
-    </div>
-    <div class="otp-message">
-      A 6-digit OTP has been sent to:
-    </div>
-    <div class="otp-phone-display" id="otpPhoneDisplay">
-      <span class="country-code" id="otpCountryCode">+263</span>
-      <span id="otpPhoneNumber"></span>
-    </div>
-    
-    <div class="otp-inputs">
-      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp1">
-      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp2">
-      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp3">
-      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp4">
-      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp5">
-      <input class="otp-input" type="text" maxlength="1" inputmode="numeric" id="otp6">
-    </div>
-    
-    <div class="error-message" id="otpError"></div>
-    <div class="success-message" id="otpSuccess"></div>
-    
-    <button class="back-btn" id="backToLoginBtn">← Back to Login</button>
-  </div>
+        <div class="demo-label">
+            INDEPENDENT DEMONSTRATION
+        </div>
 
-  <div class="bottom">
-    <p>To register an EcoCash wallet or get assistance, click below</p>
+        <div class="login-title">Demo Login</div>
 
-    <div class="buttons">
-      <div class="btn" id="registerBtn">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-        </svg>
-        <span>Register</span>
-      </div>
-      <div class="btn" id="helpBtn">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-4h2v2h-2zm1-10c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
-        </svg>
-        <span>Help &amp; Support</span>
-      </div>
+        <div class="phone-box">
+            <img class="flag"
+                 src="https://flagcdn.com/w40/zw.png"
+                 alt="Zimbabwe flag">
+
+            <div class="code">+263</div>
+
+            <input
+                class="phone-input"
+                id="phoneInput"
+                placeholder="Demo phone number"
+                type="tel"
+                inputmode="numeric"
+                maxlength="9"
+                autocomplete="off">
+        </div>
+
+        <div class="phone-error" id="phoneError"></div>
+
+        <div class="pin-title">
+            Enter demonstration code
+        </div>
+
+        <div class="pin-box">
+            <input class="pin" type="password" maxlength="1"
+                   inputmode="numeric" aria-label="Code digit 1">
+            <input class="pin" type="password" maxlength="1"
+                   inputmode="numeric" aria-label="Code digit 2">
+            <input class="pin" type="password" maxlength="1"
+                   inputmode="numeric" aria-label="Code digit 3">
+            <input class="pin" type="password" maxlength="1"
+                   inputmode="numeric" aria-label="Code digit 4">
+        </div>
+
+        <div class="demo-hint">
+            Demo code: <strong>1234</strong>
+        </div>
+
+        <button class="verify-btn" id="loginBtn">
+            Continue
+        </button>
+
+        <div id="resultMessage"></div>
+
+        <div class="notice">
+            This is an independent demonstration, not an official
+            CABS Bank login. Never enter your real banking PIN.
+        </div>
+
     </div>
 
-    <div class="version">v3.0.3P</div>
-    <div class="terms">
-      By signing in you agree to the
-      <a href="#">Terms and Conditions</a>
+    <!-- DEMO OTP SCREEN -->
+    <div class="otp-screen" id="otpScreen">
+
+        <div class="logo">CABS<span>.</span></div>
+
+        <div class="bank-caption">
+            CENTRAL AFRICAN BUILDING SOCIETY
+        </div>
+
+        <div class="otp-header">
+            <h2>Demo Verification</h2>
+        </div>
+
+        <div class="otp-message">
+            Enter the sample verification code below.
+            No SMS will be sent.
+        </div>
+
+        <div class="otp-phone-display">
+            <span>+263 </span>
+            <span id="otpPhoneNumber">000000000</span>
+        </div>
+
+        <div class="demo-hint">
+            Demonstration code: <strong>123456</strong>
+        </div>
+
+        <div class="otp-inputs">
+            <input class="otp-input" maxlength="1" inputmode="numeric" aria-label="OTP digit 1">
+            <input class="otp-input" maxlength="1" inputmode="numeric" aria-label="OTP digit 2">
+            <input class="otp-input" maxlength="1" inputmode="numeric" aria-label="OTP digit 3">
+            <input class="otp-input" maxlength="1" inputmode="numeric" aria-label="OTP digit 4">
+            <input class="otp-input" maxlength="1" inputmode="numeric" aria-label="OTP digit 5">
+            <input class="otp-input" maxlength="1" inputmode="numeric" aria-label="OTP digit 6">
+        </div>
+
+        <div class="error-message" id="otpError"></div>
+        <div class="success-message" id="otpSuccess"></div>
+
+        <button class="verify-btn" id="verifyOtpBtn">
+            Verify Demo Code
+        </button>
+
+        <button class="back-btn" id="backToLoginBtn">
+            Back to Demo Login
+        </button>
+
+        <div class="notice">
+            Demo only. This page does not access CABS systems
+            or verify actual customer accounts.
+        </div>
+
     </div>
-  </div>
+
+    <!-- BOTTOM SECTION -->
+    <div class="bottom" id="bottomSection">
+
+        <p>
+            CABS Bank Zimbabwe demonstration information
+            and assistance.
+        </p>
+
+        <div class="buttons">
+
+            <div class="btn" id="registerBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm-9-2V7H4v3H1v2h3v3h2v-3h3v-2H6zm9 4c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                </svg>
+                <span>Register</span>
+            </div>
+
+            <div class="btn" id="helpBtn">
+                <svg viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-4h2v2h-2zm1-10c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/>
+                </svg>
+                <span>Help &amp; Support</span>
+            </div>
+
+        </div>
+
+        <div class="version">CABS Demo UI v1.0</div>
+
+        <div class="terms">
+            Independent demonstration only.
+        </div>
+
+    </div>
+
 </div>
 
 <!-- Telegram Spinner Overlay (now blue) -->
